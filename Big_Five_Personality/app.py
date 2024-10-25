@@ -7,6 +7,28 @@ st.set_page_config(
     layout='wide',
 )
 
+# configurações de css
+st.markdown(
+    """
+    <style>
+        p {
+            text-align: center !important; 
+        }
+        h4 {
+            text-align: center !important; 
+        }
+        #stWidgetLabel{
+            text-align: center !important; 
+        }
+        .st-emotion-cache-ue6h4q {
+            justify-content: center;
+        }
+        .st-ae{
+            justify-content: center !important;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
 # Lendo as perguntas do arquivo
 with open('questions.txt', 'r', encoding='utf-8') as file:
     lines = file.readlines()
@@ -14,11 +36,14 @@ with open('questions.txt', 'r', encoding='utf-8') as file:
 questions = [line[6:].strip() for line in lines]
 answers = []
 
+#col1, col2, col3 = st.columns([1, 1, 1], gap="small")
+
 # Inicializa um estado para controlar se o formulário foi enviado
 if 'submitted' not in st.session_state:
     st.session_state.submitted = False
 
-# Se o botão "Enviar Respostas" não foi clicado, mostra o questionário
+#with col2:
+st.markdown('#### BIG FIVE PERSONALITY')
 if not st.session_state.submitted:
     with st.container():
         for question in questions:
@@ -29,7 +54,7 @@ if not st.session_state.submitted:
             )
             answers.append(answer)
 
-        # Quando o botão é clicado, muda o estado para ocultar as perguntas
+            # Quando o botão é clicado, muda o estado para ocultar as perguntas
         if st.button("Enviar Respostas"):
             st.session_state.submitted = True
             st.rerun()
@@ -37,4 +62,4 @@ if not st.session_state.submitted:
 # Se o formulário foi enviado, exibe apenas a mensagem "LEGAL!"
 if st.session_state.submitted:
     st.markdown("LEGAL!")
-    
+
