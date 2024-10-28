@@ -6,6 +6,8 @@ import os
 from io import open
 from sklearn.cluster import KMeans
 from yellowbrick.cluster import KElbowVisualizer
+import streamlit as st
+import plotly.graph_objects as go
 
 # Configurações do pandas
 pd.options.display.max_columns = 150 # Setando a quantidade maxima de colunas
@@ -87,3 +89,15 @@ for i in range(0, 5):
     plt.ylim(0,4)
     plt.show()
 
+def get_personality(list_answers):
+    
+    if len(list_answers) != 50:
+        st.error("Por favor, responda todas as perguntas!")
+        return
+    
+    user_data = np.array(list_answers).reshape(1, -1)
+    group_personality = k_fit.predict(user_data)
+
+    st.write('Seu grupo de personalidade é:', group_personality[0]) 
+    
+    radar_graph = go.Figure()

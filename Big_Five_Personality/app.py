@@ -1,4 +1,5 @@
 import streamlit as st
+from main import get_personality
 
 # Configuração de página
 st.set_page_config(
@@ -14,7 +15,7 @@ st.markdown(
         p {
             text-align: center !important; 
         }
-        h4 {
+        h1 {
             text-align: center !important; 
         }
         #stWidgetLabel{
@@ -26,6 +27,10 @@ st.markdown(
         .st-ae{
             justify-content: center !important;
         }
+        .stButton > button {
+            display: block;
+            margin: 0 auto;
+        }
     </style>
     """, unsafe_allow_html=True)
 
@@ -33,33 +38,45 @@ st.markdown(
 with open('questions.txt', 'r', encoding='utf-8') as file:
     lines = file.readlines()
 
-questions = [line[6:].strip() for line in lines]
+questions = [line[5:].strip() for line in lines]
 answers = []
-
-#col1, col2, col3 = st.columns([1, 1, 1], gap="small")
 
 # Inicializa um estado para controlar se o formulário foi enviado
 if 'submitted' not in st.session_state:
     st.session_state.submitted = False
 
-#with col2:
-st.markdown('#### BIG FIVE PERSONALITY')
+# Inicializa o estado para armazenar as respostas
+if 'answers' not in st.session_state:
+    st.session_state.answers = [None] * len(questions)
+
+st.markdown('# BIG FIVE PERSONALITY')
 if not st.session_state.submitted:
     with st.container():
-        for question in questions:
-            answer = st.radio(
-                label=question,
-                options=[1, 2, 3, 4, 5],
-                horizontal=True,
-            )
-            answers.append(answer)
+        for i in range(0, len(questions), 5):
+            cols = st.columns(5)
+            for j in range(5):
+                if i + j < len(questions):
+                    with cols[j]:
+                        st.session_state.answers[i + j] = st.radio(
+                            label=questions[i + j],
+                            options=[1, 2, 3, 4, 5],
+                            horizontal=True,
+                            key=f"{i + j}"
+                        )
+                        #answers.append(answer)
+        st.markdown("")
 
-            # Quando o botão é clicado, muda o estado para ocultar as perguntas
+        # Quando o botão é clicado, muda o estado para ocultar as perguntas
         if st.button("Enviar Respostas"):
             st.session_state.submitted = True
             st.rerun()
 
-# Se o formulário foi enviado, exibe apenas a mensagem "LEGAL!"
+# Se o formulário foi enviado, exibe os resultados:
 if st.session_state.submitted:
-    st.markdown("LEGAL!")
+    st.markdown("Resultados: ")
+    get_personality(st.session_state.answers)
 
+    if st.button("Voltar"):
+        st.session_state.submitted = False
+        st.session_state.answers = [None] * len(questions)
+        st.rerun()
